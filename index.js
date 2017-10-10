@@ -76,7 +76,7 @@ function cash(options = {}) {
     return (...args) => {
       const key = serialize(...args);
       return get(key).then((existingValue) => {
-        if (existingValue) {
+        if (existingValue != null) {
           return existingValue;
         }
         return Promise.resolve(func(...args)).then((newValue) => set(key, newValue));
