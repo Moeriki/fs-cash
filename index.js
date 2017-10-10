@@ -9,9 +9,15 @@ const { identity, promisify } = require('./utils');
 
 function cash(options = {}) {
   const {
+    dev = process.env.NODE_ENV !== 'production',
     encoding = 'utf8',
     filepath = path.join(process.cwd(), '.cash'),
   } = options;
+
+  const stringify = dev
+    ? (data) => JSON.stringify(data, null, 2)
+    : (data) => JSON.stringify(data)
+  ;
 
   // private
 
@@ -45,7 +51,7 @@ function cash(options = {}) {
   }
 
   function persistData() {
-    return promisify((cb) => fs.writeFile(filepath, JSON.stringify(datastore), cb))
+    return promisify((cb) => fs.writeFile(filepath, stringify(datastore), cb))
       .then(() => void 0)
     ;
   }
@@ -65,7 +71,7 @@ function cash(options = {}) {
       if (!entry) {
         return Promise.resolve();
       }
-      if (entry.expires && Date.now() > entry.expires) {
+      if (entry.expires && Date.now() > new Date(entry.expires)) {
         return del(key);
       }
       return entry.value;
@@ -96,6 +102,9 @@ function cash(options = {}) {
     const entry = { value };
     if (ttl) {
       entry.expires = Date.now() + ttl;
+      if (dev) {
+        entry.expires = new Date(entry.expires).toISOString();
+      }
     }
     return getData().then((data) => {
       data[key] = entry;

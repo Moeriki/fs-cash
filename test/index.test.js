@@ -8,11 +8,14 @@ const cash = require('../');
 
 const FILEPATH = path.join(__dirname, '../.cash');
 
+process.env.NODE_ENV = 'production'; // default dev mode to false
+
 describe('fs-cash', () => {
 
   let cache;
 
-  const setup = (data) => fs.writeFileSync(FILEPATH, JSON.stringify(data));
+  const read = () => fs.readFileSync(FILEPATH, { encoding: 'utf8' });
+  const write = (data) => fs.writeFileSync(FILEPATH, JSON.stringify(data));
 
   beforeEach(() => {
     cache = cash();
@@ -24,7 +27,7 @@ describe('fs-cash', () => {
   });
 
   it('should get value from existing file', async () => {
-    setup({ hello: { value: 'world' } });
+    write({ hello: { value: 'world' } });
     const hello = await cache.get('hello');
     expect(hello).toBe('world');
   });
@@ -87,6 +90,30 @@ describe('fs-cash', () => {
     await delay(5);
     expect(await cache.get(10000)).toBe(100);
     expect(await cache.get(4)).toBe(undefined);
+  });
+
+  describe('dev', () => {
+
+    it('should write ISO string expires', async () => {
+      process.env.NODE_ENV = 'development';
+      cache = cash();
+      await cache.set('hello', 'world', { ttl: 1 });
+      const datastore = JSON.parse(read());
+      expect(datastore).toEqual({
+        hello: {
+          expires: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/),
+          value: 'world',
+        },
+      });
+    });
+
+    it('should format JSON', async () => {
+      cache = cash({ dev: true });
+      await cache.set('hello', 'world');
+      const rawDatastore = fs.readFileSync(FILEPATH, { encoding: 'utf8' });
+      expect(rawDatastore).toMatchSnapshot();
+    });
+
   });
 
   afterEach(() => cache.reset());

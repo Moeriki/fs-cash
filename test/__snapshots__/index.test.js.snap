@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`fs-cash dev should format JSON 1`] = `
+"{
+  \\"hello\\": {
+    \\"value\\": \\"world\\"
+  }
+}"
+`;
