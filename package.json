@@ -1,6 +1,6 @@
 {
   "name": "fs-cash",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A simple fs-persisted json cache.",
   "keywords": [
     "cache",
