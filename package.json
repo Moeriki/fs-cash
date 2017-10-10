@@ -1,0 +1,32 @@
+{
+  "name": "fs-cash",
+  "version": "0.0.0",
+  "description": "A simple fs-persisted json cache.",
+  "keywords": [
+    "cache",
+    "fs"
+  ],
+  "author": "Dieter Luypaert <dieterluypaert@gmail.com>",
+  "license": "MIT",
+  "main": "index.js",
+  "engines": {
+    "node": "6"
+  },
+  "scripts": {
+    "lint": "eslint --cache *.js test/",
+    "pretest": "npm run lint",
+    "test": "jest",
+    "test:coverage": "jest --coverage"
+  },
+  "devDependencies": {
+    "babel-jest": "^21.2.0",
+    "babel-preset-env": "^1.6.0",
+    "delay": "^2.0.0",
+    "eslint": "^4.8.0",
+    "eslint-config-muriki": "^9.1.0",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-jasmine": "^2.9.1",
+    "eslint-plugin-node": "^5.2.0",
+    "jest": "^21.2.1"
+  }
+}
