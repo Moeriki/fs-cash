@@ -72,14 +72,18 @@ function cash(options = {}) {
     });
   }
 
-  function memoize(func, serialize = identity) {
+  function memoize(func, { serialize = identity, ttl } = {}) {
     return (...args) => {
       const key = serialize(...args);
       return get(key).then((existingValue) => {
         if (existingValue != null) {
           return existingValue;
         }
-        return Promise.resolve(func(...args)).then((newValue) => set(key, newValue));
+        return Promise.resolve(func(...args))
+          .then((newValue) => set(key, newValue, {
+            ttl: typeof ttl === 'function' ? ttl(newValue) : ttl,
+          }))
+        ;
       });
     };
   }
