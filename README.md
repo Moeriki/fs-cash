@@ -51,6 +51,15 @@ Delete cached value.
 
 Get cached value.
 
+### `memoize( func:function [, serialize:function ] ) :function`
+
+Memoize a function.
+
+```js
+const sqrt = cache.memoize(Math.sqrt);
+sqrt(16).then((value) => { /* 4 */ });
+```
+
 ### `set( key:string, value:* [, options:object] ) :Promise`
 
 Set cached value.

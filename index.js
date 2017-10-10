@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const { promisify } = require('./utils');
+const { identity, promisify } = require('./utils');
 
 // exports
 
@@ -72,6 +72,18 @@ function cash(options = {}) {
     });
   }
 
+  function memoize(func, serialize = identity) {
+    return (...args) => {
+      const key = serialize(...args);
+      return get(key).then((existingValue) => {
+        if (existingValue) {
+          return existingValue;
+        }
+        return Promise.resolve(func(...args)).then((newValue) => set(key, newValue));
+      });
+    };
+  }
+
   function reset() {
     return resetData();
   }
@@ -83,11 +95,11 @@ function cash(options = {}) {
     }
     return getData().then((data) => {
       data[key] = entry;
-      return persistData();
+      return persistData().then(() => value);
     });
   }
 
-  return { del, get, reset, set };
+  return { del, get, memoize, reset, set };
 }
 
 module.exports = cash;

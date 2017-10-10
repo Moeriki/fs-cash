@@ -35,6 +35,11 @@ describe('fs-cash', () => {
     expect(hello).toBe('world');
   });
 
+  it('should return value on set', async () => {
+    const hello = await cache.set('hello', 'world');
+    expect(hello).toBe('world');
+  });
+
   it('should set / del / get nothing', async () => {
     await cache.set('hello', 'world');
     await cache.del('hello');
@@ -47,6 +52,22 @@ describe('fs-cash', () => {
     await delay(5);
     const hello = await cache.get('hello');
     expect(hello).toBe(undefined);
+  });
+
+  it('should memoize function', async () => {
+    const sum = cache.memoize(
+      (num1, num2) => num1 + num2,
+      (num1, num2) => `${num1}+${num2}`
+    );
+    expect(await sum(3, 4)).toBe(7);
+    expect(await sum(3, 4)).toBe(7);
+    expect(await cache.get('3+4')).toBe(7);
+  });
+
+  it('should memoize function and auto serialize', async () => {
+    const sqrt = cache.memoize(Math.sqrt);
+    expect(await sqrt(16)).toBe(4);
+    expect(await cache.get(16)).toBe(4);
   });
 
   afterEach(() => cache.reset());
