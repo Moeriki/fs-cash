@@ -20,7 +20,7 @@
 ## Quick start
 
 ```
-npm install --save fs-cache
+npm install --save fs-cash
 ```
 
 ```js
